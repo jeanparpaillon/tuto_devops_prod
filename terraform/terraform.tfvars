@@ -1,4 +1,7 @@
 image_path      = "/var/lib/libvirt/images/ubuntu-22.04.qcow2"
-ssh_pubkey_path = "~/.ssh/id_rsa.pub"
-vm_memory       = 2048
+vm_memory       = 1024
 vm_vcpu         = 2
+ssh_key_path = "~/.ssh/id_ed25519"
+ansible_dir     = "../ansible"
+ansible_user    = "debian"
+cluster_name    = "k8s"
