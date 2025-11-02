@@ -1,0 +1,13 @@
+---
+- name: Initialize Kubernetes control plane
+  become: yes
+  command: kubeadm init --pod-network-cidr=10.244.0.0/16
+  args:
+    creates: /etc/kubernetes/admin.conf
+
+- name: Configure kube for root
+  become: yes
+  command: "{{ item }}"
+  with_items:
+    - mkdir -p /root/.kube
+    - cp -i /etc/kubernetes/admin.conf /root/.kube/config

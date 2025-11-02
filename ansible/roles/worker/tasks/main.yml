@@ -1,0 +1,7 @@
+---
+- name: Join worker to the cluster
+  become: yes
+  vars:
+    join_command: "{{ hostvars[groups['masters'][0]].join_command | default('') }}"
+  command: "{{ join_command }}"
+  when: join_command != ''

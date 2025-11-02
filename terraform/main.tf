@@ -1,5 +1,9 @@
 terraform {
   required_providers {
+   ansible = {
+      source = "ansible/ansible"
+      version = "1.3.0"
+    }
     libvirt = {
       source  = "dmacvicar/libvirt"
       version = "0.7.0"
@@ -38,9 +42,9 @@ resource "libvirt_volume" "ubuntu_base" {
 # Template de création de VM
 locals {
   base_nodes = [
-    { ip = "192.168.100.10", role = "master" },
-    { ip = "192.168.100.11", role = "worker" },
-    { ip = "192.168.100.12", role = "worker" },
+    { role = "master" },
+    { role = "worker" },
+    { role = "worker" },
   ]
 
   # Ajout d'un nom unique
@@ -77,7 +81,7 @@ resource "libvirt_domain" "vm" {
   vcpu   = var.vm_vcpu
 
   network_interface {
-    network_id   = libvirt_network.k8s.id
+    network_name   = libvirt_network.k8s.name
     hostname     = each.key
     wait_for_lease = true
   }
@@ -113,14 +117,30 @@ runcmd:
 EOF
 }
 
-resource "local_file" "ansible_inventory" {
-  content = templatefile("${path.module}/templates/inventory.tmpl", {
-    masters = local.masters
-    workers = local.workers
-    ansible_user = var.ansible_user
-    ansible_ssh_private_key_file = var.ssh_key_path
-    cluster_name = var.cluster_name
-  })
-  filename = "${var.ansible_dir}/inventory.ini"
+resource "ansible_group" "masters" {
+  name = "masters"
 }
 
+resource "ansible_group" "workers" {
+  name = "workers"
+}
+
+resource "ansible_host" "nodes" {
+  for_each = { for node in local.nodes : node.name => node }
+
+  name   = each.key
+ 
+  variables = {
+    # Connection vars.
+    ansible_user = var.ansible_user
+    ansible_host = libvirt_domain.vm[each.key].network_interface[0].addresses[0]
+    ansible_ssh_private_key_file = var.ssh_key_path
+    role = each.value.role
+    cluster = each.value.cluster
+  }
+}
+
+output "nodes" {
+  value = local.nodes
+  sensitive = false
+}
