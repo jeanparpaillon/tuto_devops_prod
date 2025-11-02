@@ -1,3 +1,4 @@
 inventory.ini
 inventory.yml
 terraform.yml
+playbooks/join-command.sh

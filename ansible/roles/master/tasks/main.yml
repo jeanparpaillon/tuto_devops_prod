@@ -1,7 +1,7 @@
 ---
 - name: Initialize Kubernetes control plane
   become: yes
-  command: kubeadm init --pod-network-cidr=10.244.0.0/16
+  command: kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=all
   args:
     creates: /etc/kubernetes/admin.conf
 
