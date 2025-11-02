@@ -71,6 +71,7 @@ resource "libvirt_volume" "vm_disk" {
   for_each = { for node in local.nodes : node.name => node }
   name     = "${each.key}.qcow2"
   base_volume_id = libvirt_volume.ubuntu_base.id
+  size = 10 * 1024 * 1024 * 1024  # 10 GB
 }
 
 resource "libvirt_domain" "vm" {
@@ -114,6 +115,9 @@ packages:
 runcmd:
   - systemctl enable qemu-guest-agent
   - systemctl start qemu-guest-agent
+growpart:
+  mode: auto
+  devices: ['/']
 EOF
 }
 
@@ -129,18 +133,21 @@ resource "ansible_host" "nodes" {
   for_each = { for node in local.nodes : node.name => node }
 
   name   = each.key
- 
+  groups  = [each.value.role == "master" ? ansible_group.masters.name : ansible_group.workers.name]
+
   variables = {
     # Connection vars.
     ansible_user = var.ansible_user
     ansible_host = libvirt_domain.vm[each.key].network_interface[0].addresses[0]
     ansible_ssh_private_key_file = var.ssh_key_path
+    ansible_python_interpreter = "/usr/bin/python3"
+    ansible_ssh_common_args = "-o StrictHostKeyChecking=no"
     role = each.value.role
     cluster = each.value.cluster
   }
 }
 
 output "nodes" {
-  value = local.nodes
+  value = ansible_host.nodes
   sensitive = false
 }

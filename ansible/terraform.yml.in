@@ -3,14 +3,6 @@ plugin: cloud.terraform.terraform_provider
 # Path to your Terraform project
 project_path: "@TF_PROJECT_PATH@"
 
-# Group hosts by role and cluster
-keyed_groups:
-  - key: role
-    prefix: ""
-  - key: cluster
-    prefix: "cluster"
-
 # Map variables from terraform output into ansible host vars
 compose:
   ansible_host: ip
-  cluster: cluster

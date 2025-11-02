@@ -1,7 +1,6 @@
 ---
-- name: Join worker to the cluster
+- name: Join worker node to cluster
   become: yes
-  vars:
-    join_command: "{{ hostvars[groups['masters'][0]].join_command | default('') }}"
-  command: "{{ join_command }}"
-  when: join_command != ''
+  command: "{{ lookup('file', 'join-command.sh') }}"
+  args:
+    creates: /etc/kubernetes/kubelet.conf

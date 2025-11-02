@@ -1,0 +1,16 @@
+---
+- hosts: all
+  # Create inventory groups at runtime from hostvars provided by the terraform inventory
+  # This ensures groups like 'master', 'worker' and 'cluster_k8s' exist even if the
+  # inventory plugin doesn't populate them as expected.
+  pre_tasks:
+    - name: Create groups by role
+      group_by:
+        key: "{{ hostvars[inventory_hostname].role | default('nogroup') }}"
+
+    - name: Create groups by cluster
+      group_by:
+        key: "cluster_{{ hostvars[inventory_hostname].cluster | default('nogroup') }}"
+
+  roles:
+    - common

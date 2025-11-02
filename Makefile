@@ -51,6 +51,9 @@ ansible-inventory: $(TF_INVENTORY)
 $(TF_INVENTORY): $(TF_INVENTORY).in
 	sed "s|@TF_PROJECT_PATH@|$(TERRAFORM_DIR)|g" $< > $@
 
+ansible-playbook-%:
+	cd $(ANSIBLE_DIR) && ansible-playbook playbooks/$*.yml -b
+
 ansible-clean:
 	rm -f $(TF_INVENTORY)
 
