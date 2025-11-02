@@ -2,7 +2,3 @@ plugin: cloud.terraform.terraform_provider
 
 # Path to your Terraform project
 project_path: "@TF_PROJECT_PATH@"
-
-# Map variables from terraform output into ansible host vars
-compose:
-  ansible_host: ip

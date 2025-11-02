@@ -1,0 +1,5 @@
+---
+# Default Kubernetes version for the common role.
+# This can be overridden in group_vars/all.yml, inventory vars, play vars,
+# or via --extra-vars kube_version=...
+kubernetes_version: "1.30"
