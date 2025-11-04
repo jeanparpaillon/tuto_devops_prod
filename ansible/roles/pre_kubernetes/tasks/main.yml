@@ -1,0 +1,67 @@
+---
+# Pre-flight cleanup and fixes before running geerlingguy.kubernetes
+# Works for both master and worker nodes, with special care for worker join
+
+# ------------------------------------------------------
+# 1. Handle apt/dpkg locks to prevent concurrent updates
+# ------------------------------------------------------
+- name: Wait for apt locks to be released
+  shell: |
+    while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 1; done
+    while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 1; done
+  become: true
+
+- name: Disable apt-daily timers to avoid future lock conflicts
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+  become: true
+  ignore_errors: true
+
+# ------------------------------------------------------
+# 2. Network kernel parameters required by Kubernetes
+# ------------------------------------------------------
+- name: Ensure IP forwarding is enabled
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes
+  become: true
+
+# ------------------------------------------------------
+# 3. Reset kubeadm / clean up previous state
+# ------------------------------------------------------
+- name: Stop kubelet if running
+  service:
+    name: kubelet
+    state: stopped
+    enabled: no
+  ignore_errors: true
+  become: true
+
+- name: Reset kubeadm (ignore errors if not initialized)
+  command: kubeadm reset -f
+  ignore_errors: true
+  become: true
+
+- name: Remove old Kubernetes and CNI configuration dirs
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/cni/net.d
+    - /var/lib/cni
+    - /var/lib/kubelet
+  ignore_errors: true
+  become: true
+
+- name: Restart container runtime (containerd)
+  service:
+    name: containerd
+    state: restarted
+  become: true

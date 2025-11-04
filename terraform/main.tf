@@ -33,9 +33,9 @@ resource "libvirt_pool" "default" {
 
 # Volume de base (image cloud-init Ubuntu)
 resource "libvirt_volume" "ubuntu_base" {
-  name   = "ubuntu-24.04.qcow2"
+  name   = var.ubuntu_base
   pool   = libvirt_pool.default.name
-  source = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+  source = var.ubuntu_image_url
   format = "qcow2"
 }
 
@@ -71,7 +71,7 @@ resource "libvirt_volume" "vm_disk" {
   for_each = { for node in local.nodes : node.name => node }
   name     = "${each.key}.qcow2"
   base_volume_id = libvirt_volume.ubuntu_base.id
-  size = 10 * 1024 * 1024 * 1024  # 10 GB
+  size = var.vm_disk_size_gb * 1024 * 1024 * 1024
 }
 
 resource "libvirt_domain" "vm" {

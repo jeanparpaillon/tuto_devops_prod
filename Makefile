@@ -5,6 +5,7 @@ VENV := .venv
 TERRAFORM_DIR := $(abspath ./terraform)
 ANSIBLE_DIR := $(abspath ./ansible)
 TF_INVENTORY := $(ANSIBLE_DIR)/terraform.yml
+ANSIBLE_PLAYBOOK := site.yml
 
 all:
 
@@ -51,8 +52,11 @@ ansible-inventory: $(TF_INVENTORY)
 $(TF_INVENTORY): $(TF_INVENTORY).in
 	sed "s|@TF_PROJECT_PATH@|$(TERRAFORM_DIR)|g" $< > $@
 
-ansible-playbook-%:
-	cd $(ANSIBLE_DIR) && ansible-playbook playbooks/$*.yml -b
+ansible-playbook:
+	cd $(ANSIBLE_DIR) && ansible-playbook playbooks/$(ANSIBLE_PLAYBOOK)
+
+ansible-verify:
+	cd $(ANSIBLE_DIR) && ansible-playbook playbooks/$(ANSIBLE_PLAYBOOK) --tags verify
 
 ansible-clean:
 	rm -f $(TF_INVENTORY)

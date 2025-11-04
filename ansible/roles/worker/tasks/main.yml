@@ -1,6 +1,0 @@
----
-- name: Join worker node to cluster
-  become: yes
-  command: "{{ lookup('file', 'join-command.sh') }}"
-  args:
-    creates: /etc/kubernetes/kubelet.conf
