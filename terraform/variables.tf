@@ -8,9 +8,14 @@ variable "ssh_key_path" {
   type        = string
 }
 
-variable "vm_memory" {
-  description = "Memory per VM in MB"
+variable "master_memory" {
+  description = "Memory for master VM in MB"
   default     = 2048
+}
+
+variable "worker_memory" {
+  description = "Memory per VM in MB"
+  default     = 1024
 }
 
 variable "vm_vcpu" {

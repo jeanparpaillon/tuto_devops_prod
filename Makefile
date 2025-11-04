@@ -6,6 +6,7 @@ TERRAFORM_DIR := $(abspath ./terraform)
 ANSIBLE_DIR := $(abspath ./ansible)
 TF_INVENTORY := $(ANSIBLE_DIR)/terraform.yml
 ANSIBLE_PLAYBOOK := site.yml
+MOLECULE_SCENARIO := k8s_cluster
 
 all:
 
@@ -61,8 +62,17 @@ ansible-verify:
 ansible-clean:
 	rm -f $(TF_INVENTORY)
 
-k8s-join-command:
-	ansible masters -m shell -a "kubeadm token create --print-join-command" -b
+molecule-test:
+	cd $(ANSIBLE_DIR)/roles/master && molecule test -s $(MOLECULE_SCENARIO) --destroy=never
+
+molecule-converge:
+	cd $(ANSIBLE_DIR)/roles/master && molecule converge -s $(MOLECULE_SCENARIO)
+
+molecule-verify:
+	cd $(ANSIBLE_DIR)/roles/master && molecule verify -s $(MOLECULE_SCENARIO)
+
+molecule-reset:
+	cd $(ANSIBLE_DIR)/roles/master && molecule reset -s $(MOLECULE_SCENARIO)
 
 venv-clean:
 	rm -rf $(VENV)
@@ -70,5 +80,5 @@ venv-clean:
 
 .PHONY: all destroy clean inventory setup activate venv-clean
 .PHONY: tf-init tf-plan tf-apply tf-output tf-destroy tf-console
-.PHONY: ansible-inventory ansible-galaxy ansible-setup ansible-clean
-.PHONY: k8s-join-command
+.PHONY: ansible-inventory ansible-galaxy ansible-setup ansible-clean ansible-playbook ansible-verify
+.PHONY: molecule-test molecule-converge molecule-verify molecule-reset

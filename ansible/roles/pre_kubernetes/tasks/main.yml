@@ -64,4 +64,5 @@
   service:
     name: containerd
     state: restarted
+  ignore_errors: true
   become: true

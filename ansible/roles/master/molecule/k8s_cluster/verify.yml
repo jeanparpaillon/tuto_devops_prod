@@ -1,10 +1,49 @@
 ---
-# Purpose: assert that the instance really ended up in the expected state.
-# Molecule calls this playbook with `molecule verify`.
-- name: Verify
-  hosts: instance
-  gather_facts: false # Quicker, if you do not need facts
+- hosts: masters
+  become: yes
   tasks:
-    - name: Assert something
-      ansible.builtin.assert:
-        that: true
+    - name: Wait for API server
+      ansible.builtin.command: kubectl get componentstatuses --kubeconfig /etc/kubernetes/admin.conf
+      register: api
+      retries: 10
+      delay: 10
+      until: api.rc == 0
+      changed_when: false
+
+    - name: Check node readiness
+      command: kubectl get nodes --no-headers --kubeconfig /etc/kubernetes/admin.conf
+      register: nodes
+      changed_when: false
+      failed_when: "'NotReady' in nodes.stdout"
+
+    - name: Check CoreDNS pods
+      command: kubectl get pods -n kube-system -l k8s-app=kube-dns --no-headers --kubeconfig /etc/kubernetes/admin.conf
+      register: dns
+      changed_when: false
+      failed_when: "'Running' not in dns.stdout"
+
+    - name: Report cluster status
+      debug:
+        msg:
+          - "Nodes:"
+          - "{{ nodes.stdout_lines }}"
+          - "DNS:"
+          - "{{ dns.stdout_lines }}"
+
+    # Smoke test: nginx
+    - name: Deploy nginx test pod
+      command: kubectl run nginx-test --image=nginx --port=80 --kubeconfig /etc/kubernetes/admin.conf
+      register: nginx
+      ignore_errors: true
+
+    - name: Wait for nginx pod to be Running
+      shell: kubectl get pod nginx-test --no-headers --kubeconfig /etc/kubernetes/admin.conf | awk '{print $3}'
+      register: pod_status
+      retries: 15
+      delay: 5
+      until: pod_status.stdout == "Running"
+      changed_when: false
+
+    - name: Clean up nginx pod
+      command: kubectl delete pod nginx-test --kubeconfig /etc/kubernetes/admin.conf
+      ignore_errors: true

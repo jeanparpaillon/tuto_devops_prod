@@ -41,6 +41,11 @@ resource "libvirt_volume" "ubuntu_base" {
 
 # Template de création de VM
 locals {
+  vm_memory = {
+    master = var.master_memory
+    worker = var.worker_memory
+  }
+
   base_nodes = [
     { role = "master" },
     { role = "worker" },
@@ -78,7 +83,7 @@ resource "libvirt_domain" "vm" {
   for_each = { for node in local.nodes : node.name => node }
 
   name   = each.key
-  memory = var.vm_memory
+  memory = local.vm_memory[each.value.role]
   vcpu   = var.vm_vcpu
 
   network_interface {
