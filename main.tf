@@ -24,6 +24,11 @@ resource "libvirt_volume" "ubuntu_base" {
   source = "noble-server-cloudimg-amd64.img"
   format = "qcow2"
 }
+resource "libvirt_volume" "vm_disk" {
+  count          = var.node_count
+  name           = "node${count.index + 1}.qcow2"
+  base_volume_id = libvirt_volume.ubuntu_base.id
+}
 
 resource "libvirt_domain" "node" {
   count  = var.node_count
@@ -34,11 +39,11 @@ resource "libvirt_domain" "node" {
   # type   = "qemu"
 
   network_interface {
-    network_name   = "default"
+    network_name = "default"
   }
 
   disk {
-    volume_id = libvirt_volume.ubuntu_base.id
+    volume_id = libvirt_volume.vm_disk[count.index].id
   }
 
   console {
