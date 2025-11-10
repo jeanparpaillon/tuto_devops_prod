@@ -30,6 +30,8 @@ resource "libvirt_domain" "node" {
   name   = "node${count.index + 1}"
   memory = 2048
   vcpu   = 1
+  # In case KVM is not available
+  # type   = "qemu"
 
   network_interface {
     network_name   = "default"
