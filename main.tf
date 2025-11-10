@@ -25,8 +25,9 @@ resource "libvirt_volume" "ubuntu_base" {
   format = "qcow2"
 }
 
-resource "libvirt_domain" "node1" {
-  name   = "node1"
+resource "libvirt_domain" "node" {
+  count  = var.node_count
+  name   = "node${count.index + 1}"
   memory = 2048
   vcpu   = 1
 
