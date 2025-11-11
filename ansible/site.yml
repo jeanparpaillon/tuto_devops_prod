@@ -1,0 +1,13 @@
+- hosts: all
+  tasks:
+    - name: Ensure Python is installed
+      apt:
+        name: python3
+        state: present
+      become: yes
+    - name: Ensure fortunes is installed
+      apt:
+        name: fortunes
+        state: present
+        update_cache: yes
+      become: yes
