@@ -2,13 +2,21 @@ PYTHON := $(shell asdf where python)/bin/python3
 VENV := .venv
 
 IMAGE = noble-server-cloudimg-amd64.img
+LAB_IMAGE = geerlingguy/docker-ubuntu2404-ansible
+LAB_CONTAINERS = master worker1 worker2
 
 all: $(IMAGE)
 
 ansible-lab:
-	docker run -d --name master ubuntu:noble sleep infinity
-	docker run -d --name worker1 ubuntu:noble sleep infinity
-	docker run -d --name worker2 ubuntu:noble sleep infinity
+	for container in $(LAB_CONTAINERS); do \
+		docker run -d --name $$container $(LAB_IMAGE) sleep infinity; \
+	done
+
+clean-ansible-lab:
+	for container in $(LAB_CONTAINERS); do \
+		docker kill -f $$container || true; \
+		docker rm -f $$container || true; \
+	done
 
 setup-env: | $(VENV)
 

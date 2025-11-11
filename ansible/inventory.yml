@@ -1,0 +1,16 @@
+all:
+  hosts:
+    master:
+      ansible_connection: docker
+    worker1:
+      ansible_connection: docker
+    worker2:
+      ansible_connection: docker
+  children:
+    masters:
+      hosts:
+        master:
+    nodes:
+      hosts:
+        worker1:
+        worker2:
