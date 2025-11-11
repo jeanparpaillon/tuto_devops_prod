@@ -1,0 +1,6 @@
+---
+# tasks file for readme
+- name: Copy README.md from role files to HOME
+  copy:
+    src: README.md
+    dest: "{{ ansible_env.HOME }}/README.md"
