@@ -1,4 +1,4 @@
-PYTHON := $(shell asdf where python)/bin/python3
+PYTHON := $(shell which python3)
 VENV := .venv
 
 IMAGE = noble-server-cloudimg-amd64.img
