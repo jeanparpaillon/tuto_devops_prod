@@ -14,8 +14,8 @@ ansible-lab:
 
 clean-ansible-lab:
 	for container in $(LAB_CONTAINERS); do \
-		docker kill -f $$container || true; \
-		docker rm -f $$container || true; \
+		docker kill $$container || true; \
+		docker rm $$container || true; \
 	done
 
 setup-env: | $(VENV)
