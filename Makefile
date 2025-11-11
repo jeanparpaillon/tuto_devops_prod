@@ -5,6 +5,11 @@ IMAGE = noble-server-cloudimg-amd64.img
 
 all: $(IMAGE)
 
+ansible-lab:
+	docker run -d --name master ubuntu:noble sleep infinity
+	docker run -d --name worker1 ubuntu:noble sleep infinity
+	docker run -d --name worker2 ubuntu:noble sleep infinity
+
 setup-env: | $(VENV)
 
 $(VENV):
