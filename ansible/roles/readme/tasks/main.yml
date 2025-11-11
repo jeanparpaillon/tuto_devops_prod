@@ -4,3 +4,4 @@
   copy:
     src: README.md
     dest: "{{ ansible_env.HOME }}/README.md"
+  notify: README copied
