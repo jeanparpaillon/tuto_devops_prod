@@ -18,8 +18,14 @@ spec:
         - name: mysql              # Name of the container
           image: mysql:8.0         # Docker image to use for the container
           env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: "rootpassword" # Sets the MySQL root password as an environment variable
+            - name: MYSQL_DATABASE
+              value: wordpressdb
+            - name: MYSQL_USER
+              value: wordpressuser
+            - name: MYSQL_PASSWORD
+              value: wordpresspass
+            - name: MYSQL_RANDOM_ROOT_PASSWORD
+              value: '1'
           ports:
             - containerPort: 3306  # Exposes port 3306 for MySQL traffic
           volumeMounts:
