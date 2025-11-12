@@ -7,7 +7,6 @@ metadata:
   # Optionally, add namespace if needed
   # namespace: default
 data:
-  WORDPRESS_DB_HOST: mysql:3306
-  WORDPRESS_DB_USER: wordpressuser
-  WORDPRESS_DB_PASSWORD: wordpresspass
-  WORDPRESS_DB_NAME: wordpressdb
+  mysql-user: wordpressuser
+  mysql-password: wordpresspass
+  mysql-database: wordpressdb

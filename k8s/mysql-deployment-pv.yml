@@ -19,25 +19,13 @@ spec:
           image: mysql:8.0         # Docker image to use for the container
           env:
             - name: MYSQL_DATABASE
-              valueFrom:
-                configMapKeyRef:
-                  name: lab-secrets  
-                  key: mysql-database
+              value: wordpressdb
             - name: MYSQL_USER
-              valueFrom:
-                configMapKeyRef:
-                  name: lab-config  
-                  key: mysql-user
+              value: wordpressuser
             - name: MYSQL_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: lab-secrets  
-                  key: mysql-password
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: lab-secrets  # Name of the Kubernetes Secret
-                  key: mysql-root-password              # Key in the Secret containing the password
+              value: wordpresspass
+            - name: MYSQL_RANDOM_ROOT_PASSWORD
+              value: '1'
           ports:
             - containerPort: 3306  # Exposes port 3306 for MySQL traffic
           volumeMounts:
@@ -45,4 +33,5 @@ spec:
               mountPath: /var/lib/mysql # Mounts the volume at MySQL data directory
       volumes:
         - name: mysql-data
-          emptyDir: {}             # Defines an ephemeral volume for MySQL data (data lost if pod is deleted)
+          persistentVolumeClaim:
+            claimName: mysql-pvc   # Use PVC for persistent MySQL data
