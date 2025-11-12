@@ -23,17 +23,17 @@ spec:
             - name: WORDPRESS_DB_USER
               valueFrom:
                 configMapKeyRef:
-                  name: wordpress-config  # Name of the ConfigMap
+                  name: lab-config  # Name of the ConfigMap
                   key: mysql-user         # MySQL database username key
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: wordpress-config  # Name of the ConfigMap
+                  name: lab-secrets  # Name of the ConfigMap
                   key: mysql-password     # MySQL database password key
             - name: WORDPRESS_DB_NAME
               valueFrom:
                 configMapKeyRef:
-                  name: wordpress-config  # Name of the ConfigMap
+                  name: lab-config  # Name of the ConfigMap
                   key: mysql-database     # MySQL database name key
           ports:
             - containerPort: 80    # Exposes port 80 from the container
