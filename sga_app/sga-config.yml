@@ -3,16 +3,9 @@ kind: ConfigMap
 metadata:
   name: sga-web-config
 data:
-  httpd.conf: |
-    ServerName sga
-    ServerRoot "/usr/local/apache2"
-    Listen 80
-    LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
-    LoadModule proxy_module modules/mod_proxy.so
-    LoadModule proxy_http_module modules/mod_proxy_http.so
-
+  sga.conf: |
     <VirtualHost *:80>
       ProxyPreserveHost On
-      ProxyPass / http://sga-app:8080/
-      ProxyPassReverse / http://sga-app:8080/
+      ProxyPass /sga http://sga-app-service:8080/
+      ProxyPassReverse /sga http://sga-app-service:8080/
     </VirtualHost>

@@ -38,8 +38,8 @@ spec:
             - containerPort: 80
           volumeMounts:
             - name: web-config
-              mountPath: /usr/local/apache2/conf/httpd.conf
-              subPath: httpd.conf
+              mountPath: /usr/local/apache2/conf/extra/sga.conf
+              subPath: sga.conf
       volumes:
         - name: web-config
           configMap:
@@ -59,6 +59,7 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
+      nodePort: 30081
   type: LoadBalancer
 
 ---

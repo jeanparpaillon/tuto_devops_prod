@@ -8,7 +8,7 @@ WORKDIR /src/complete
 RUN ./mvnw package
 RUN mkdir /opt/app
 
-FROM eclipse-temurin:17.0.17_10-jre-ubi10-minimal
+FROM eclipse-temurin:17-jdk-focal
 
 EXPOSE 8080
 
