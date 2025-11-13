@@ -19,11 +19,20 @@ spec:
           image: mysql:8.0         # Docker image to use for the container
           env:
             - name: MYSQL_DATABASE
-              value: wordpressdb
+              valueFrom:
+                configMapKeyRef:
+                  name: lab-config  
+                  key: mysql-database
             - name: MYSQL_USER
-              value: wordpressuser
+              valueFrom:
+                configMapKeyRef:
+                  name: lab-config  
+                  key: mysql-user
             - name: MYSQL_PASSWORD
-              value: wordpresspass
+              valueFrom:
+                secretKeyRef:
+                  name: lab-secrets  
+                  key: mysql-password
             - name: MYSQL_RANDOM_ROOT_PASSWORD
               value: '1'
           ports:
