@@ -38,8 +38,8 @@ spec:
             - containerPort: 80
           volumeMounts:
             - name: web-config
-              mountPath: /usr/local/apache2/conf/extra/sga.conf
-              subPath: sga.conf
+              mountPath: /usr/local/apache2/conf/httpd.conf
+              subPath: httpd.conf
       volumes:
         - name: web-config
           configMap:
